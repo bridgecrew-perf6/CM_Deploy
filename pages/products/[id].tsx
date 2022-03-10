@@ -30,21 +30,22 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
 }) => {
 
   const router = useRouter();
-  const { data, mutate } = useSWR<ItemDetailResponse>(router.query.id ? `/api/products/${router.query.id}` : null)
+  const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(router.query.id ? `/api/products/${router.query.id}` : null)
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
   const onFavClick = () => {
     if (!data) return;
-    mutate({ ...data, isLiked: !data.isLiked }, false);
+    boundMutate((prev) => prev && { ...prev, isLiked: !prev.isLiked }, false);
+    // mutate({ ...data, isLiked: !data.isLiked }, false);
     toggleFav({});
   }
 
-  if (router.isFallback) {
-    return (
-      <Layout title="Loading for you!">
-        <span>Please Wait For A While.</span>
-      </Layout>
-    );
-  }
+  // if (router.isFallback) {
+  //   return (
+  //     <Layout title="Loading for you!">
+  //       <span>Please Wait For A While.</span>
+  //     </Layout>
+  //   );
+  // }
 
   return (
     <Layout canGoBack>
@@ -52,7 +53,7 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
         <div className="mb-8">
           <div className="relative pb-80">
             <Image
-              src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${product.image}/public`}
+              src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${data?.product.image}/public`}
               className="bg-slate-300 object-contain"
               layout="fill"
             />
@@ -61,14 +62,14 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
             <Image
               width={48}
               height={48}
-              src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${product?.user?.avatar}/avatar`}
+              src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${data?.product?.user?.avatar}/avatar`}
               className="w-12 h-12 rounded-full bg-slate-300"
             />
             <div>
               <p className="text-sm font-medium text-gray-700">
-                {product?.user?.name}
+                {data?.product?.user?.name}
               </p>
-              <Link href={`/users/profiles/${product?.user?.id}`}>
+              <Link href={`/users/profiles/${data?.product?.user?.id}`}>
                 <a className="text-xs font-medium text-gray-500">
                   View profile &rarr;
                 </a>
@@ -76,9 +77,9 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
             </div>
           </div>
           <div className="mt-5">
-            <h1 className="text-3xl font-bold text-gray-900">{product?.name}</h1>
-            <span className="text-2xl block mt-3 text-gray-900">₩ {product?.price}</span>
-            <p className=" my-6 text-gray-700">{product?.description}</p>
+            <h1 className="text-3xl font-bold text-gray-900">{data?.product?.name}</h1>
+            <span className="text-2xl block mt-3 text-gray-900">₩ {data?.product?.price}</span>
+            <p className=" my-6 text-gray-700">{data?.product?.description}</p>
             <div className="flex items-center justify-between space-x-2">
 
               <Button large text="Talk to seller" />
@@ -88,9 +89,13 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
               <button
                 onClick={onFavClick}
                 className={cls("p-3 rounded-md flex items-center hover:bg-gray-100 justify-center",
-                  isLiked ? "text-red-500 hover:text-red-600" : "text-gray-400 hover:text-gray-500")}
+                  data?.isLiked ?
+                    "text-red-500 hover:text-red-600"
+                    :
+                    "text-gray-400 hover:text-gray-500"
+                )}
               >
-                {isLiked ?
+                {data?.isLiked ?
                   <svg
                     className="w-6 h-6"
                     fill="currentColor"
@@ -127,12 +132,12 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Similar items</h2>
           <div className=" mt-6 grid grid-cols-2 gap-4">
-            {relatedProducts.map((product) => (
+            {data?.relatedProducts.map((product) => (
               <Link key={product.id} href={`/products/${product.id}`}>
                 <a>
-                  <div className="w-20 h-20 relative rounded-md">
+                  <div className=" relative rounded-md h-56 w-full mb-4 bg-slate-300">
                     <Image
-                      src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${product.image}/avatar`}
+                      src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${product?.image}/public`}
                       layout="fill"
                       objectFit="cover"
                     />
@@ -149,57 +154,57 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
   );
 };
 
-export const getStaticPaths: GetStaticPaths = () => {
-  return {
-    paths: [],
-    fallback: true,
-  };
-};
+// export const getStaticPaths: GetStaticPaths = () => {
+//   return {
+//     paths: [],
+//     fallback: true,
+//   };
+// };
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
-  if (!ctx?.params?.id) {
-    return {
-      props: {},
-    };
-  }
-  const product = await client.product.findUnique({
-    where: {
-      id: +ctx.params.id.toString(),
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          avatar: true,
-        },
-      },
-    },
-  });
-  const terms = product?.name.split(" ").map((word) => ({
-    name: {
-      contains: word,
-    },
-  }));
-  const relatedProducts = await client.product.findMany({
-    where: {
-      OR: terms,
-      AND: {
-        id: {
-          not: product?.id,
-        },
-      },
-    },
-  });
-  const isLiked = false;
-  await new Promise((resolve) => setTimeout(resolve, 10000));
-  return {
-    props: {
-      product: JSON.parse(JSON.stringify(product)),
-      relatedProducts: JSON.parse(JSON.stringify(relatedProducts)),
-      isLiked,
-    },
-  };
-};
+// export const getStaticProps: GetStaticProps = async (ctx) => {
+//   if (!ctx?.params?.id) {
+//     return {
+//       props: {},
+//     };
+//   }
+//   const product = await client.product.findUnique({
+//     where: {
+//       id: +ctx.params.id.toString(),
+//     },
+//     include: {
+//       user: {
+//         select: {
+//           id: true,
+//           name: true,
+//           avatar: true,
+//         },
+//       },
+//     },
+//   });
+//   const terms = product?.name.split(" ").map((word) => ({
+//     name: {
+//       contains: word,
+//     },
+//   }));
+//   const relatedProducts = await client.product.findMany({
+//     where: {
+//       OR: terms,
+//       AND: {
+//         id: {
+//           not: product?.id,
+//         },
+//       },
+//     },
+//   });
+//   const isLiked = false;
+//   await new Promise((resolve) => setTimeout(resolve, 10000));
+//   return {
+//     props: {
+//       product: JSON.parse(JSON.stringify(product)),
+//       relatedProducts: JSON.parse(JSON.stringify(relatedProducts)),
+//       isLiked,
+//     },
+//   };
+// };
 
 export default ItemDetail;

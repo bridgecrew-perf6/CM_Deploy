@@ -19,20 +19,20 @@ interface PostsResponse {
   posts: PostWithUser[];
 }
 
-const Community: NextPage<PostsResponse> = ({ posts }) => {
+const Community: NextPage<PostsResponse> = () => {
 
-  // const { latitude, longitude } = useCoords();
-  // const { data } = useSWR<PostsResponse>(
-  //   latitude && longitude ?
-  //     `/api/posts?latitude=${latitude}&longitude=${longitude}`
-  //     :
-  //     null
-  // );
+  const { latitude, longitude } = useCoords();
+  const { data } = useSWR<PostsResponse>(
+    latitude && longitude ?
+      `/api/posts?latitude=${latitude}&longitude=${longitude}`
+      :
+      null
+  );
 
   return (
     <Layout hasTabBar title="동네생활">
       <div className="space-y-4 divide-y-[2px]">
-        {posts?.map((post) => (
+        {data?.posts?.map((post) => (
           <Link
             key={post.id}
             href={`/community/${post.id}`}
@@ -109,24 +109,24 @@ const Community: NextPage<PostsResponse> = ({ posts }) => {
   );
 };
 
-export async function getStaticProps() {
-  const posts = await client.post.findMany({ 
-    include: { 
-      user: true, 
-      _count: {
-        select: {
-          wonderings: true,
-          answers: true,
-        },
-      },
-    }
-  });
-  return {
-    props: {
-      posts: JSON.parse(JSON.stringify(posts)),
-    },
-    revalidate: 120,
-  };
-}
+// export async function getStaticProps() {
+//   const posts = await client.post.findMany({ 
+//     include: { 
+//       user: true, 
+//       _count: {
+//         select: {
+//           wonderings: true,
+//           answers: true,
+//         },
+//       },
+//     }
+//   });
+//   return {
+//     props: {
+//       posts: JSON.parse(JSON.stringify(posts)),
+//     },
+//     revalidate: 120,
+//   };
+// }
 
 export default Community;

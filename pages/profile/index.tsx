@@ -33,7 +33,8 @@ const Profile: NextPage = () => {
             <div className="w-16 h-16 bg-slate-500 rounded-full" />
           )}
           <div className="flex flex-col">
-            <span className="font-medium text-gray-900">{user?.name}</span>
+            <span className="text-lg text-gray-900">{user?.name}</span>
+            <span className="text-md text-gray-800">{user?.email}</span>
             <Link href="/profile/edit">
               <a className="text-sm text-gray-700">Edit profile &rarr;</a>
             </Link>
@@ -113,7 +114,12 @@ const Profile: NextPage = () => {
         {data?.reviews.map((review) => (
           <div key={review.id} className="mt-12">
             <div className="flex space-x-4 items-center">
-              <div className="w-12 h-12 rounded-full bg-slate-500" />
+              <div className="flex items-center mt-3 space-x-2 rounded-full bg-slate-500 ">
+                <img
+                  src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${review.createdBy.avatar}/public`}
+                  className="w-16 h-16 bg-slate-500 rounded-full"
+                />
+              </div>
               <div>
                 <h4 className="text-sm font-bold text-gray-800">
                   {review.createdBy.name}

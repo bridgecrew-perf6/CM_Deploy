@@ -62,31 +62,33 @@ const Home: NextPage = () => {
   );
 };
 
-const Page: NextPage<{ products: ProductWithCount[] }> = ({ products }) => {
-  return (
-    <SWRConfig
-      value={{
-        fallback: {
-          "/api/products": {
-            ok: true,
-            products,
-          },
-        },
-      }}
-    >
-      <Home />
-    </SWRConfig>
-  );
-};
+// const Page: NextPage<{ products: ProductWithCount[] }> = ({ products }) => {
+//   return (
+//     <SWRConfig
+//       value={{
+//         fallback: {
+//           "/api/products": {
+//             ok: true,
+//             products,
+//           },
+//         },
+//       }}
+//     >
+//       <Home />
+//     </SWRConfig>
+//   );
+// };
 
-export async function getServerSideProps() {
-  // console.log("SSR");
-  const products = await client.product.findMany({});
-  return {
-    props: {
-      products: JSON.parse(JSON.stringify(products)),
-    },
-  };
-}
+// export async function getServerSideProps() {
+//   // console.log("SSR");
+//   const products = await client.product.findMany({});
+//   return {
+//     props: {
+//       products: JSON.parse(JSON.stringify(products)),
+//     },
+//   };
+// }
 
-export default Page;
+// export default Page;
+
+export default Home;

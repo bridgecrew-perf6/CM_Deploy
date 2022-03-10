@@ -5,6 +5,7 @@ import Layout from "@components/layout";
 import { Stream } from "@prisma/client";
 import useSWR from "swr";
 import Image from "next/image";
+import iphone from "../../public/vercel.svg"
 
 interface StreamsResponse {
   ok: boolean;

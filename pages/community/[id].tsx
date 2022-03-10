@@ -9,6 +9,7 @@ import useMutation from "@libs/client/useMutation";
 import { cls } from "@libs/client/utils";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import Image from "next/image";
 
 interface AnswerWithUser extends Answer {
   user: User;
@@ -81,7 +82,11 @@ const CommunityPostDetail: NextPage = () => {
           동네질문
         </span>
         <div className="flex mb-3 px-4 cursor-pointer pb-3  border-b items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-slate-300" />
+          {/* <div className="w-10 h-10 rounded-full bg-slate-300" /> */}
+          <img
+            src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${data?.post?.user?.avatar}/public`}
+            className="w-12 h-12 bg-slate-500 rounded-full"
+          />
           <div>
             <p className="text-sm font-medium text-gray-700">{data?.post?.user?.name}</p>
             <Link href={`/users/profiles/${data?.post?.user?.id}`}>

@@ -90,7 +90,7 @@ const Community: NextPage<PostsResponse> = () => {
               </a>
             </Link>
           )) :
-          <div className="mt-96 text-center text-5xl text-orange-500 pb-24">
+          <div className="mt-64 text-center text-5xl text-orange-500 pb-24">
             Loading...
             <img
               src="/loading.gif"

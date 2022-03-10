@@ -20,7 +20,8 @@ export function middleware(req: NextRequest, ev: NextFetchEvent) {
 
     if(!req.url.includes("/api")) {
         if(!req.url.includes("/enter") && !req.cookies.carrotsession) {
-            // return NextResponse.redirect("/enter"); 배포시 정확한 url이 필요해서 아래와 같이 고침, 개발 과정에는 이렇게만 해도 작동됨.
+            // return NextResponse.redirect("/enter"); 
+            // 위 주석처리한 이유는 배포시 정확한 url이 필요해서 아래와 같이 고침, 개발 과정에는 이렇게만 해도 작동됨.
             return NextResponse.redirect(new URL('/enter', req.url));
         };
     };

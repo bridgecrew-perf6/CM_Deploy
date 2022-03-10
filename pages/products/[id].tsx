@@ -47,6 +47,10 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
   //   );
   // }
 
+  const buyIt = () => {
+    console.log("Clicked!!")
+  }
+  
   return (
     <Layout canGoBack>
       <div className="px-4  py-4">
@@ -81,7 +85,14 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
             <span className="text-2xl block mt-3 text-gray-900">₩ {data?.product?.price}</span>
             <p className=" my-6 text-gray-700">{data?.product?.description}</p>
             <div className="flex items-center justify-between space-x-2">
-              <Button large text="구매하기" clicked={true} />
+              
+              <div 
+                onClick={buyIt}
+                className="w-full"
+              >
+                <Button large text="구매하기" />
+              </div>
+              
               <button
                 onClick={onFavClick}
                 className={cls("p-3 rounded-md flex items-center hover:bg-gray-100 justify-center",

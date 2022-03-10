@@ -5,17 +5,25 @@ import Layout from "@components/layout";
 import { Stream } from "@prisma/client";
 import useSWR from "swr";
 import Image from "next/image";
-import iphone from "../../public/vercel.svg"
 
 interface StreamsResponse {
   ok: boolean;
   streams: Stream[]
 }
 
+interface diffTypes {
+  src?: string;
+  width?: number;
+  quality?: number;
+}
+
 const Streams: NextPage = () => {
 
   const { data } = useSWR<StreamsResponse>(`/api/streams`)
-  console.log(data?.streams)
+
+  const myLoader = ({ src, width, quality }: diffTypes) => {
+    return `https://videodelivery.net/${src}/thumbnails/thumbnail.jpg?height=270`
+  }
 
   return (
     <Layout hasTabBar title="라이브">
@@ -24,9 +32,14 @@ const Streams: NextPage = () => {
           <Link key={stream.id} href={`/streams/${stream.id}`}>
             <a className="pt-4 block px-4">
               <div className="w-full relative overflow-hidden rounded-md shadow-sm bg-slate-600 aspect-video">
-                <Image
+                {/* <Image
+                  src={`https://videodelivery.net/${stream.cloudflareId}/thumbnails/thumbnail.jpg?height=270`}
                   layout="fill"
-                  src={`https://videodelivery.net/${stream.cloudflareId}/thumbnails/thumbnail.jpg?time=02s&height=270`}
+                /> */}
+                <Image
+                  loader={myLoader}
+                  src={stream.cloudflareId}
+                  layout="fill"
                 />
               </div>
               <h1 className="text-2xl mt-2 font-bold text-gray-900">

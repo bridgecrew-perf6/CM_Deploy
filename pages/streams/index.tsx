@@ -15,6 +15,7 @@ interface StreamsResponse {
 const Streams: NextPage = () => {
 
   const { data } = useSWR<StreamsResponse>(`/api/streams`)
+  console.log(data?.streams)
 
   return (
     <Layout hasTabBar title="라이브">
@@ -25,7 +26,7 @@ const Streams: NextPage = () => {
               <div className="w-full relative overflow-hidden rounded-md shadow-sm bg-slate-600 aspect-video">
                 <Image
                   layout="fill"
-                  src={`https://videodelivery.net/${stream.cloudflareId}/thumbnails/thumbnail.jpg?height=270`}
+                  src={`https://videodelivery.net/${stream.cloudflareId}/thumbnails/thumbnail.jpg?time=02s&height=270`}
                 />
               </div>
               <h1 className="text-2xl mt-2 font-bold text-gray-900">

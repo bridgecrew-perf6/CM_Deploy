@@ -11,6 +11,7 @@ import { cls } from "@libs/client/utils";
 import Image from "next/image";
 import useUser from "@libs/client/useUser";
 import client from "@libs/server/client";
+import { useState } from "react";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -47,8 +48,14 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
   //   );
   // }
 
+  const [word, setWord] = useState("구매하기");
+
+  const [buyBuy] = useMutation(`/api/products/${router.query.id}/buyIt`);
+
   const buyIt = () => {
-    console.log("Clicked!!")
+    buyBuy({});
+    setWord("구매하였습니다")
+    // router.push("/profile/bought");
   }
   
   return (
@@ -90,7 +97,7 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
                 onClick={buyIt}
                 className="w-full"
               >
-                <Button large text="구매하기" />
+                <Button large text={word} />
               </div>
               
               <button

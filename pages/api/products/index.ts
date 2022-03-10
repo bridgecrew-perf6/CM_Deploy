@@ -27,8 +27,8 @@ async function handler(
         // const { user } = req.session;
         // 위 두줄을 아래와 같이 한번에 작성할 수 있다.
 
-        console.log(req.body)
-        console.log(req.session)
+        // console.log(req.body)
+        // console.log(req.session)
 
         const {
             body: { name, price, description, photoId },

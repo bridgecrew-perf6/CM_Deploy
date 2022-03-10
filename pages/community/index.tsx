@@ -6,6 +6,7 @@ import useSWR from "swr";
 import { Post, User } from "@prisma/client";
 import useCoords from "@libs/client/useCoords";
 import client from "@libs/server/client";
+import ima from "../../public/Spinner.gif"
 
 interface PostWithUser extends Post {
   user: User;
@@ -89,7 +90,14 @@ const Community: NextPage<PostsResponse> = () => {
               </a>
             </Link>
           )) :
-          <div>Loading...</div>}
+          <div className="mt-96 text-center text-5xl text-orange-500 pb-24">
+            Loading...
+            <img
+              src="/loading.gif"
+              className="w-120 h-120 bg-slate-500 "
+            />
+          </div>
+          }
         <FloatingButton href="/community/write">
           <svg
             className="w-6 h-6"

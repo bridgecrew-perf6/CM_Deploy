@@ -47,7 +47,6 @@ const Enter: NextPage = () => {
   const onTokenValid = (data: TokenForm) => {
     if(tokenLoading) return;
     confirmToken(data);
-
   }
   const router = useRouter();
   useEffect(() => {

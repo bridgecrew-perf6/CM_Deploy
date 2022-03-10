@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  phone String? @unique
+  email String? @unique
+  name String
+  avatar String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tokens Token[]
+  products Product[]
+  fav Fav[]
+  posts Post[]
+  answer Answer[]
+  wonderings Wondering[]
+  writtenReviews Review[] @relation(name:"writtenReviews")
+  receivedReviews Review[] @relation(name:"receivedReviews")
+  sales Sale[]
+  purchases Purchase[]
+  streams Stream[]
+  messages Message[]
+}
+
+model Token {
+  id Int @id @default(autoincrement())
+  payload String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId])
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  image String
+  name String
+  price Int
+  description String @db.MediumText
+  fav Fav[]
+  sales Sale[]
+  purchases Purchase[]
+
+  @@index([userId])
+}
+
+model Fav {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, productId])
+}
+
+model Post {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  question String @db.MediumText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  latitude Float?
+  longitude Float?
+  answers Answer[]
+  wonderings Wondering[]
+  @@index([userId])
+}
+
+model Answer {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+  answer String @db.MediumText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, postId])
+}
+
+model Wondering {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, postId])
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  review String @db.MediumText
+  createdBy User @relation(name: "writtenReviews", fields: [createdById], references: [id], onDelete: Cascade)
+  createdById Int
+  createdFor User @relation(name: "receivedReviews", fields: [createdForId], references: [id], onDelete: Cascade)
+  createdForId Int
+  score Int @default(1)
+  @@index([createdById, createdForId])
+}
+
+model Sale {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, productId])
+}
+
+model Purchase {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, productId])
+}
+
+model Stream {
+  id Int @id @default(autoincrement())
+  name String
+  description String @db.MediumText
+  price Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages Message[]
+  cloudflareId  String
+  cloudflareUrl String
+  cloudflareKey String
+  @@index([userId])
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  message String @db.MediumText
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  streamId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, streamId])
+}
+
+// Fav, Purchase, Sale 모델들을 보면 다 똑같다. 이름만 다를뿐 그 안에 구성이나 구조는 같게 되어있다. 그렇다면 이렇게 같은 구조를 가지지만 이름만 다른 모델을 하나로 만들 순 없을까? 방법은 아래와 같다.
+
+// 위 했던것처럼 모델을 3개 만드는것보단 Rocord라는 하나의 모델을 만들고 그 안에 Kind라는 항목만 하나 추가해주면 된다. Kind는 이름이 다른 3가지들을 구분하기 위한 항목이고 이러한 Kind 항목을 만들려면 enum을 사용햐면 된다. 아래와 같다.
+
+// model Record {
+//   id Int @id @default(autoincrement())
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId Int
+//   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+//   productId Int
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   kind Kind
+//   @@index([userId, productId])
+// }
+
+// enum Kind {
+//   Purchase
+//   Sale
+//   Fav
+// }
+
+// 위와같이 작성한 후 유저 모델과 프로덕트 모델에 record Record[] 만 추가해주면 된다.

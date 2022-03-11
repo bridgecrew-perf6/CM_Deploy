@@ -62,10 +62,10 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
     <Layout canGoBack>
       <div className="px-4  py-4">
         <div className="mb-8">
-          <div className="relative pb-80">
+          <div className="relative pb-96 ">
             <Image
               src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${data?.product.image}/public`}
-              className="bg-slate-300 object-contain"
+              className="bg-slate-50 object-contain"
               layout="fill"
             />
           </div>
@@ -149,11 +149,11 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({
             {data?.relatedProducts.map((product) => (
               <Link key={product.id} href={`/products/${product.id}`}>
                 <a>
-                  <div className=" relative rounded-md h-56 w-full mb-4 bg-slate-300">
+                  <div className=" relative rounded-md h-56 w-full mb-4 bg-slate-50">
                     <Image
                       src={`https://imagedelivery.net/GyaT_KXVm8ENK5O549pkYA/${product?.image}/public`}
                       layout="fill"
-                      objectFit="cover"
+                      objectFit="contain"
                     />
                   </div>
                   <h3 className="text-gray-700 -mb-1">{product.name}</h3>

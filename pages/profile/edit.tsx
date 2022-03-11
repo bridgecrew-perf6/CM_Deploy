@@ -62,7 +62,7 @@ const EditProfile: NextPage = () => {
     } else {
       editProfile({ email, phone, name });
     };
-    router.push("/profile")
+    // router.push("/profile")
   };
 
   useEffect(() => {

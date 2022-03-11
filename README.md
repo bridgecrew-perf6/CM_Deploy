@@ -1,5 +1,5 @@
 ## Tailwind CSS
 
-테일윈드 CSS 🧑🏻‍💻
+캐럿마켓 🧑🏻‍💻
 
-Tailwind CSS 연습해보기.
+배포를 위한 캐럿마켓!
